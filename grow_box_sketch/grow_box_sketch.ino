@@ -5,23 +5,20 @@
 //     write to SD
 //     turn lamp on, wait to 16 hrs, turn lamp off, wait to 24 hours, repeat 
 
+#include <stdlib.h>      //type conversion etc.
 #include <Time.h>       // elementary tracking of seconds since start  
 #include <DHT.h>        // DHT22 Humidity Sensor
 #include <TFT.h>        // Arduino LCD library
 #include <SPI.h>        // SPI (needed for TFT, serial peripheral interface)
-#include <SD.h>         // micro SD card library
-#include <stdlib.h>      //type conversion etc.
 // pin definition for the Uno
 #define DHTPIN 6        // what pin we're connected to
 #define DHTTYPE DHT22   // DHT 22  (AM2302)
-#define SD_CS  7
 #define LCD_CS 10
 #define DC   9
 #define RESET  8  
 const int light = 3;
-const int lampon = 57599;  //above this time, lamp is off
-const int lampoff = 86399; // at this time, clock is reset and lamp on
-int cardon = 1;
+const int lampon = 20;  //above this time, lamp is off
+const int lampoff = 40; // at this time, clock is reset and lamp on
 int sec;
 float t;
 float h;
@@ -60,17 +57,12 @@ void setup() {
   // output, even if you don't use it:
   pinMode(10, OUTPUT);
 
-  // see if the card is present and can be initialized:
-  if (!SD.begin(SD_CS)) {
-    cardon = 0;
-  }
 }
 
 // the loop routine runs over and over again forever:
 void loop() {
   delay(1000);     // wait for a second
-  time_t realtime = now();
-  int sec = now();
+  sec = now();
 
   // black out the previous dynamic text
   TFTscreen.setTextSize(3);
@@ -122,13 +114,13 @@ void loop() {
     hl = h;
   }
 
+  itoa(sec,clock,5);
   dtostrf(t,4,1,temperature);
   dtostrf(h,2,0,humidity);
   dtostrf(th,4,1,htemperature);
   dtostrf(hh,2,0,hhumidity);
   dtostrf(tl,4,1,ltemperature);
   dtostrf(hl,2,0,lhumidity);
-  itoa(realtime,clock,5);
 
   TFTscreen.stroke(255,255,255);
   TFTscreen.text(temperature, 0, 20);
@@ -145,30 +137,6 @@ void loop() {
   TFTscreen.setTextSize(3);  
   TFTscreen.stroke(255,255,255);
   TFTscreen.text(clock, 0, 80);
-
-  if (cardon==1) {
-    String dataString = "c,T,H,   ";
-    dataString += clock;
-    dataString += ", "; 
-    dataString += temperature;
-    dataString += ", "; 
-    dataString += humidity;
-    dataString += ", "; 
-
-    // open the file. note that only one file can be open at a time,
-    // so you have to close this one before opening another.
-    File dataFile = SD.open("lightbox.txt", FILE_WRITE);
-
-    // if the file is available, write to it:
-    if (dataFile) {
-      dataFile.println(dataString);
-      dataFile.close();
-    }  
-    // if the file cant open, disable logging
-    else {
-      cardon = 0;
-    }
-  } 
 
   if (t>35) {
     TFTscreen.background(255, 0, 0);
