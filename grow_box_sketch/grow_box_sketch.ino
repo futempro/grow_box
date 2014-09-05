@@ -17,9 +17,9 @@
 #define DC   9
 #define RESET  8  
 const int light = 3;
-const int lampon = 20;  //above this time, lamp is off
-const int lampoff = 40; // at this time, clock is reset and lamp on
-int sec;
+long lampon = 57599;  //above this time, lamp is off
+long lampoff = 86399; // at this time, clock is reset and lamp on
+long sec;
 float t;
 float h;
 float th;
@@ -77,11 +77,11 @@ void loop() {
   TFTscreen.setTextSize(3);  
   TFTscreen.text(clock, 0, 80);
 
-  if (sec>lampon){
+  if (sec > lampon){
     digitalWrite(light, LOW);    // turn the LED off by making the voltage LOW
   }
 
-  if (sec>lampoff){
+  if (sec > lampoff){
     setTime(0);                  // reset the system clock
     digitalWrite(light, HIGH);   // turn the LED on (HIGH is the voltage level)
   }
@@ -114,7 +114,7 @@ void loop() {
     hl = h;
   }
 
-  itoa(sec,clock,5);
+  itoa(sec,clock,10);
   dtostrf(t,4,1,temperature);
   dtostrf(h,2,0,humidity);
   dtostrf(th,4,1,htemperature);
