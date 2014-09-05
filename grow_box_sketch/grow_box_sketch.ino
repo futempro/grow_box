@@ -1,6 +1,6 @@
 
 // grpw_box_sketch
-// 1.0 MEH use code from Adafruit and Arduino core examples
+// 1.0 MEH 04 Sep 2014 use code from Adafruit and Arduino core examples
 //     monitor temperature, humidity in grow box
 //     write to SD
 //     turn lamp on, wait to 16 hrs, turn lamp off, wait to 24 hours, repeat 
@@ -114,7 +114,7 @@ void loop() {
     hl = h;
   }
 
-  itoa(sec,clock,10);
+  ltoa(sec,clock,10);
   dtostrf(t,4,1,temperature);
   dtostrf(h,2,0,humidity);
   dtostrf(th,4,1,htemperature);
